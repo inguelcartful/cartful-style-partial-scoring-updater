@@ -29,42 +29,39 @@ export const putStylePartialScoring = (
     .promise();
 };
 
-export const getStylePartialScoringVersion = async (
+export const getStylePartialScoringConfig = async (
   finder: string,
-): Promise<string | number> => {
+): Promise<any> => {
   return dynamodbClient
     .getItem({
       TableName: STYLE_PARTIAL_SCORING_TABLE,
       Key: {
-        pk: { S: `${finder}::custom-partial-scoring` },
-        sk: { S: 'version' },
+        pk: { S: 'stylePartialScoringConfig' },
+        sk: { S: `${finder}::latest` },
       },
     })
     .promise()
     .then(item => {
-      return (((item || {}).Item || {}).version as number) || 0;
+      return (item || {}).Item || {};
     })
-    .catch(() => 0);
+    .catch(() => ({}));
 };
 
-export const updateStylePartialScoringVersion = (
+export const updateStylePartialScoringConfig = (
   finder: string,
-  version: number,
+  newConfig: any,
 ): Promise<any> => {
   return dynamodbClient
     .putItem({
       TableName: STYLE_PARTIAL_SCORING_TABLE,
-      Item: {
+      Item: Object.assign(newConfig, {
         pk: {
-          S: `${finder}::custom-partial-scoring`,
+          S: 'stylePartialScoringConfig',
         },
         sk: {
-          S: 'version',
+          S: `${finder}::latest`,
         },
-        version: {
-          N: '' + version,
-        },
-      },
+      }),
     })
     .promise();
 };
