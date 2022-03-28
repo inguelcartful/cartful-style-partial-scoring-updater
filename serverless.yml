@@ -1,0 +1,46 @@
+service: style-partial-scoring-sync
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, self:custom.stage}
+  region: ${self:custom.region}
+  deploymentBucket:
+    name: 'style-partial-scoring-sync-${self:provider.region}-${self:provider.stage}'
+  # vpc:
+  #   securityGroupIds:
+  #     - sg-063a2306db10dac19
+  #   subnetIds:
+  #     - subnet-ec2074c7
+  #     - subnet-b84946cf
+  #     - subnet-3fd2f466
+  #     - subnet-41bf467c
+  environment:
+    REGION: ${self:provider.region}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-plugin-reducer
+  - serverless-iam-roles-per-function
+  - serverless-pseudo-parameters
+  - serverless-deployment-bucket
+
+package:
+  individually: true
+
+custom:
+  region: us-east-2
+  stage: dev
+  reducer:
+    ignoreMissing: true
+
+functions:
+  stylePartialScoringSync:
+    handler: src/functions/style-partial-scoring-sync/factory.stylePartialScoringDispatcherFn
+    environment:
+      REGION: ${self:provider.region}
+      STYLE_PARTIAL_SCORING_TABLE: 'style-partial-scoring'
+    timeout: 900
+    memorySize: 2048
