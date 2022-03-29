@@ -43,4 +43,45 @@ functions:
       REGION: ${self:provider.region}
       STYLE_PARTIAL_SCORING_TABLE: 'style-partial-scoring'
     timeout: 900
-    memorySize: 2048
+    memorySize: 10000
+    iamRoleStatementsName: LStylePartialScoringU-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:BatchWriteItem
+        Resource:
+          - '*'
+      - Effect: Allow
+        Action:
+          - s3:ListBucket
+          - s3:GetObject
+        Resource:
+          - '*'
+  styleClustersSync:
+    handler: src/functions/style-clusters-sync/factory.styleClustersDispatcherFn
+    environment:
+      REGION: ${self:provider.region}
+      STYLE_PARTIAL_SCORING_TABLE: 'style-partial-scoring'
+    timeout: 900
+    memorySize: 10000
+    iamRoleStatementsName: LStyleClustersU-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:BatchWriteItem
+        Resource:
+          - '*'
+      - Effect: Allow
+        Action:
+          - s3:ListBucket
+          - s3:GetObject
+        Resource:
+          - '*'
