@@ -160,8 +160,20 @@ const styleClustersDispatcher = async (
 
   return updateStylePartialScoringConfig(finder, {
     version: { N: '' + version },
-    weightPercent: { N: '' + (config.weightPercent || 1) },
-    maxScore: { N: '' + (config.maxScore || 9) },
+    weightPercent: {
+      N:
+        '' +
+        ((config.weightPercent && config.weightPercent.N
+          ? config.weightPercent.N
+          : config.weightPercent) || 1),
+    },
+    maxScore: {
+      N:
+        '' +
+        ((config.maxScore && config.maxScore.N
+          ? config.maxScore.N
+          : config.maxScore) || 9),
+    },
   });
 };
 
